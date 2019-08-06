@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 ## Vagrant provision shell script
 
@@ -36,8 +37,16 @@ mkdir $HOME/go
 echo 'export GOPATH=$HOME/go' >> ~/.bashrc
 echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 
+# Install Upcloud terraform provider
+# At provision stage, there's no GOPATH in PATH env
+export GOPATH=$HOME/go
+export PATH=$PATH:/usr/local/go/bin
+go get github.com/UpCloudLtd/terraform-provider-upcloud
+go install github.com/UpCloudLtd/terraform-provider-upcloud
 
-# Environment variables
-# source /home/vagrant/provision.env
+mkdir -p $HOME/.terraform.d/plugins
+ln -s $GOPATH/bin/terraform-provider-upcloud $HOME/.terraform.d/plugins/terraform-provider-upcloud
 
+
+# cleanup
 rm -rvf $WORKDIR
